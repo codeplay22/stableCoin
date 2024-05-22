@@ -49,8 +49,8 @@ This project is meant to be a stablecoin where users can deposit WETH and WBTC i
 ## Quickstart
 
 ```
-git clone https://github.com/Cyfrin/foundry-defi-stablecoin-f23
-cd foundry-defi-stablecoin-f23
+git clone https://github.com/codeplay22/stableCoin
+cd codeplay22/stableCoin
 forge build
 ```
 
