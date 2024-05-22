@@ -27,7 +27,6 @@ contract DscEngineTest is Test{
         (dsc,dsce,config) = deployer.run();
         (ethUsdPriceFeed,btcUsdPriceFeed, weth,,) = config.activeNetworkConfig();
         ERC20Mock(weth).mint(USER,STARTING_ERC20_BALANCE);
-
     }
 
     ///////////////////////////
@@ -51,17 +50,15 @@ contract DscEngineTest is Test{
 
     function testGetUsdValue() public {
         uint256 ethAmount = 15e18;
-        uint256 expectedUsd = 30000e18;
+        // 15e18 * $3000/ETH
+        uint256 expectedUsd = 45000e18;
         uint256 actualUsd = dsce.getUsdValue(weth, ethAmount);
-        console.log("weth is",weth);
-
-        // assertEq(expectedUsd, actualUsd);
-        console.log("actualUsd is ",actualUsd);
+        assertEq(expectedUsd, actualUsd);
     }
 
     function testGetTokenAmountFromUsd() public {
         uint256 usdAmount = 100 ether;
-        // $2000 /ETH, $100
+        // $3000/ETH, $100
         uint256 expectedWeth = 0.033333333333333333 ether;
         uint256 actualWeth = dsce.getTokenAmountFromUsd(weth, usdAmount);
         console.log("actualWeth is", actualWeth);
@@ -87,32 +84,10 @@ contract DscEngineTest is Test{
         //RAN means Random token
         ERC20Mock ranToken = new ERC20Mock("RAN","RAN", USER, Amount_Collateral);
         vm.startPrank(USER);
-        console.log("USER is",USER);
         vm.expectRevert(DSCEngine.DSCEngine__NotAllowedToken.selector);
         dsce.depositCollateral(address(ranToken), Amount_Collateral);
         vm.stopPrank();
     }
-
-    // modifier depositedCollateral() {
-    //     vm.startPrank(USER);
-    //     ERC20Mock(weth).approveInternal(USER, address(dsce),Amount_Collateral);
-    //     dsce.depositCollateral(weth, Amount_Collateral);
-    //     vm.stopPrank();
-    //     _;
-    // }
-
-    // function testCanDepositCollateralAndGetAccountInfo() public depositedCollateral{
-        
-    //     (uint256 totalDscMinted,uint256 collateralValueInUsd) = dsce.getAccountInformation(USER);
-    //     uint256 expectedTotalDscMinted = 0;
-    //     console.log("collateralValueInUsd is",collateralValueInUsd);
-    //     console.log("totalDscMinted is",totalDscMinted);
-    //     uint256 expectedDepositAmount = dsce.getTokenAmountFromUsd(weth,collateralValueInUsd);
-    //     console.log("expectedCollateralValueInUsd is",expectedDepositAmount);
-    //     assertEq(totalDscMinted, expectedTotalDscMinted);
-    //     assertEq(Amount_Collateral, expectedDepositAmount);
-
-    // }
 
     modifier depositedCollateral() {
         vm.startPrank(USER);
@@ -126,18 +101,14 @@ contract DscEngineTest is Test{
         
         (uint256 totalDscMinted,uint256 collateralValueInUsd) = dsce.getAccountInformation(USER);
         uint256 expectedTotalDscMinted = 0;
-        console.log("USER IS inside test",USER);
-        // console.log("collateralValueInUsd is",collateralValueInUsd);
+        // console.log("USER IS inside test",USER);
+        console.log("collateralValueInUsd is",collateralValueInUsd);
         // console.log("totalDscMinted is",totalDscMinted);
         uint256 expectedDepositAmount = dsce.getTokenAmountFromUsd(weth,collateralValueInUsd);
-        // console.log("expectedCollateralValueInUsd is",expectedDepositAmount);
+        console.log("expectedDepositAmount is",expectedDepositAmount);
         assertEq(totalDscMinted, expectedTotalDscMinted);
         assertEq(Amount_Collateral, expectedDepositAmount);
 
     }
-
-
-
-
-
+    
 }
